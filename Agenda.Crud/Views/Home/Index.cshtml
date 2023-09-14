@@ -72,7 +72,47 @@
 </style>
 
 <script type="text/javascript">
-   
+
+    // Idioma
+
+    var ajax = new ej.base.Ajax(location.origin + '/../../locale/pt.json', 'GET', false);
+
+    //load the de json culture file
+    ajax.send().then((e) => {
+        var loader = JSON.parse(e);
+
+        ej.base.L10n.load(
+            loader
+        );
+
+        ej.base.setCulture('pt');
+
+
+    });
+
+
+    //Set the culture for the ASP.NET Core controls
+    // Cultura
+    loadCultureFiles('pt');
+    function loadCultureFiles(name) {
+        var files = ['ca-gregorian.json', 'numbers.json', 'timeZoneNames.json'];
+        var loader = ej.base.loadCldr;
+        var loadCulture = function (prop) {
+            var val, ajax;
+            ajax = new ej.base.Ajax(location.origin + '/../cldr-data/main/' + name + '/' + files[prop], 'GET', false);
+            ajax.onSuccess = function (value) {
+                val = value;
+            };
+            ajax.send();
+            loader(JSON.parse(val));
+        };
+        for (var prop = 0; prop < files.length; prop++) {
+            loadCulture(prop);
+        }
+    }
+
+
+
     var projectData = JSON.parse('@Html.Raw(Json.Serialize(ViewBag.Projects))');
     var categoriesData = JSON.parse('@Html.Raw(Json.Serialize(ViewBag.Categories))');
 
@@ -120,56 +160,32 @@
     function onDataBinding(args) {
         // Before Load the data to the scheduler need to convert the string to array
 
-        // console.log('args.result:');
-        // console.log(args.result);
-
-        let data = args.result;
+     
+        let data = args.result;    
        
-        // console.log('data:');
-        // console.log(args.result);
-
-        // console.log('.');
-        // console.log('.');
-        // console.log('.');
-        // console.log('***********************************************');
-        // console.log('.');
-        // console.log('.');
-        // console.log('.');
 
         let scheduleData = [];
-        // console.log('entrando foreach');
+      
         data.forEach(element => {
-            // console.log(element.categoryId);
-            // console.log('entrando foreach');
+          
             let res = element.categoryId;//.split(',');
-            // console.log('entrando foreach2');
-
-            // element.CategoryId = res.map(function (x) {
-               
-            //     return parseInt(x, 10);
-            // });
+           
             scheduleData.push(element);
         });
-        // console.log('saindo foreach');
-
+      
         args.result = scheduleData;
        
-        // console.log('scheduleData:');
-        // console.log(scheduleData);
-
-        // console.log('.');
-        // console.log('.');
-        // console.log('.');
-        // console.log('***********************************************');
-        // console.log('.');
-        // console.log('.');
-        // console.log('.');
+        
 
     }
 
 
     var scheduleObj = document.getElementById('schedule').ej2_instances[0];
     scheduleObj.refreshEvents();
+
+
+   
+
 
 </script>
 
